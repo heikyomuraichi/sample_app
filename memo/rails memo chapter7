@@ -1,0 +1,69 @@
+railsの環境について
+Railsにはテスト環境 (test)、開発環境 (development)、そして本番環境 (production) の3つの環境がデフォルトで装備されています。
+Rails consoleのデフォルトの環境はdevelopmentです。
+
+saasのミックスイン機能について
+ミックスイン機能を使うことで、CSSルールのグループをパッケージ化して複数の要素に適用することができます。例えば次のようなコードは、
+.debug_dump {
+  .
+  .
+  .
+  @include box_sizing;
+}
+
+このように変換されます。
+
+.debug_dump {
+  .
+  .
+  .
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
+}
+
+MD5のハッシュ化
+Gravatarのホームページにも書かれているように、
+GravatarのURLはユーザーのメールアドレスをMD5という仕組みでハッシュ化しています。
+Rubyでは、Digestライブラリのhexdigestメソッドを使うと、MD5のハッシュ化が実現できます。
+
+埋め込み解説1
+<%= form_for(@user) do |f| %>
+  .
+  .
+  .
+<% end %>
+doキーワードは、 form_forが1つの変数を持つブロックを取ることを表します。この変数fは “form” のfです。
+
+fオブジェクトについて
+通常、Railsヘルパーを使っている場合、実装の詳細について知っておく必要はありません。
+ただしfというオブジェクトが何をするのかは知っておく必要があります。このfオブジェクトは、
+HTMLフォーム要素 (テキストフィールド、ラジオボタン、パスワードフィールドなど) に対応するメソッドが呼び出されると、
+@userの属性を設定するために特別に設計されたHTMLを返します。つまり、次のコードを実行すると、
+
+<%= f.label :name %>
+<%= f.text_field :name %>
+Userモデルのname属性を設定する、ラベル付きテキストフィールド要素を作成するのに必要なHTMLを作成します。
+
+次の埋め込みRubyは、
+<%= f.label :name %>
+<%= f.text_field :name %>
+このようなHTMLを生成していることがわかります。
+
+<label for="user_name">Name</label>
+<input id="user_name" name="user[name]" type="text" />
+
+name属性経由でuserを作成
+Railsはnameの値を使って、初期化したハッシュを (params変数経由で) 構成します。
+このハッシュは、入力された値に基づいてユーザーを作成するときに使われます (詳しくは7.3で説明)。
+
+pluralizeメソッド
+pluralizeの最初の引数に整数が与えられると、それに基づいて2番目の引数の英単語を複数形に変更したものを返します。
+
+リダイレクトのメソッドとFWによる推察
+redirect_to @user
+といった行がありますが、これは次のコードと等価になります。
+
+redirect_to user_url(@user)
+これはredirect_to @userというコードから (Railsエンジニアが) user_url(@user)といったコードを実行したいということを、
+Railsが推察してくれた結果になります。
